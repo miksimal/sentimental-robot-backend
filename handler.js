@@ -1,18 +1,20 @@
 'use strict';
+const got = require('got');
+const jsdom = require('jsdom');
+const { JSDOM } = jsdom;
+const URL = 'https://dr.dk';
 
-module.exports.hello = async event => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify(
-      {
-        message: 'Go Serverless v1.0! Your function executed successfully!',
-        input: event,
-      },
-      null,
-      2
-    ),
-  };
 
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
-};
+module.exports.scraper = async event => {
+  const response = await got(URL);
+  const dom = new JSDOM(response.body);
+
+  const headlineElements = dom.window.document.querySelectorAll("h2 > strong");
+  const headlineElementsArr = [...headlineElements];
+  const length = headlineElements.length >= 10 ? 10 : headlineElements.length;
+
+  let topHeadlines = headlineElementsArr.slice(0,length).map(e => e.textContent);
+
+  return { message: topHeadlines, event }
+
+}
