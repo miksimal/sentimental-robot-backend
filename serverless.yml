@@ -17,13 +17,11 @@ provider:
   runtime: nodejs12.x
   stage: dev
   region: eu-west-1
-
-# you can add statements to the Lambda function's IAM Role here
-#  iamRoleStatements:
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:ListBucket"
-#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:PutItem
+      Resource: 'arn:aws:dynamodb:eu-west-1:*:*'
 #    - Effect: "Allow"
 #      Action:
 #        - "s3:PutObject"
@@ -90,13 +88,22 @@ functions:
 #    environment:
 #      variable2: value2
 
-# you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
+
+resources:
+  Resources:
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: topHeadlines
+        AttributeDefinitions:
+          - AttributeName: date
+            AttributeType: Date
+        KeySchema:
+          - AttributeName: date
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
 #  Outputs:
 #     NewOutput:
 #       Description: "Description for the output"
