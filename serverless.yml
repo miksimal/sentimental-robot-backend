@@ -97,7 +97,7 @@ resources:
         TableName: topHeadlines
         AttributeDefinitions:
           - AttributeName: date
-            AttributeType: N
+            AttributeType: S
         KeySchema:
           - AttributeName: date
             KeyType: HASH
