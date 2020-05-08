@@ -16,25 +16,20 @@ module.exports.scraper = async event => {
   const length = headlineElements.length >= 10 ? 10 : headlineElements.length;
 
   let topHeadlines = headlineElementsArr.slice(0,length).map(e => e.textContent);
-  let date = new Date();
-  let isoDate = date.toISOString();
 
   var params = {
     Item: {
-      date: isoDate,
+      date: Date.now(),
       topHeadlines: topHeadlines,
     },
     TableName: 'topHeadlines'
   };
 
-  client.put(params, function(err, data){
+  client.put(params, function(err){
     if(err){
-      callback(err, null);
+      return { message: "failed to put into dynamodb with error " + err }
     } else {
-      callback(null, data);
+      return { message: topHeadlines, event }
     }
   });
-
-  return { message: topHeadlines, event }
-
 }

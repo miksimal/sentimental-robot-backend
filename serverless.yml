@@ -91,13 +91,13 @@ functions:
 
 resources:
   Resources:
-    usersTable:
+    topHeadlinesTable:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: topHeadlines
         AttributeDefinitions:
           - AttributeName: date
-            AttributeType: Date
+            AttributeType: N
         KeySchema:
           - AttributeName: date
             KeyType: HASH
