@@ -10,10 +10,11 @@ const URL = 'https://dr.dk';
 module.exports.scraper = async event => {
   const response = await got(URL);
   const dom = new JSDOM(response.body);
+  const MAX_LENGTH = 10;
 
   const headlineElements = dom.window.document.querySelectorAll("h2 > strong");
   const headlineElementsArr = [...headlineElements];
-  const length = headlineElements.length >= 10 ? 10 : headlineElements.length;
+  const length = headlineElements.length >= MAX_LENGTH ? MAX_LENGTH : headlineElements.length;
 
   let topHeadlines = headlineElementsArr.slice(0,length).map(e => e.textContent);
 
@@ -28,10 +29,12 @@ module.exports.scraper = async event => {
     TableName: 'topHeadlines'
   };
 
-  try {
-    await client.put(params).promise();
-    return { message: topHeadlines, event }
-  } catch(err) {
-    return { message: "failed to put into dynamodb with error: " + err }
-  }
+  return client.put(params).promise();
+
+  // try {
+  //   await client.put(params).promise();
+  //   return { message: "Success! The headlines were: " + topHeadlines }
+  // } catch(err) {
+  //   return { message: "failed to put into dynamodb with error: " + err }
+  // }
 }

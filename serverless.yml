@@ -50,8 +50,9 @@ functions:
     handler: handler.scraper
     events:
       - schedule:
-        name: scrape-news-every-2-hours
-        rate: rate(2 hours)
+          name: invoke-every-two-hours
+          description: 'invokes the scraper lambda every two hours'
+          rate: rate(2 hours)
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
