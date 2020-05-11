@@ -31,10 +31,4 @@ module.exports.scraper = async event => {
 
   return client.put(params).promise();
 
-  // try {
-  //   await client.put(params).promise();
-  //   return { message: "Success! The headlines were: " + topHeadlines }
-  // } catch(err) {
-  //   return { message: "failed to put into dynamodb with error: " + err }
-  // }
 }
