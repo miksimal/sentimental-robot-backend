@@ -23,6 +23,7 @@ module.exports.scraper = async event => {
 
   var params = {
     Item: {
+      year: d.getFullYear(),
       date: isoDate,
       topHeadlines: topHeadlines,
     },

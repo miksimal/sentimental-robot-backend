@@ -6,19 +6,39 @@ const client = new AWS.DynamoDB.DocumentClient({region: 'eu-west-1'});
 module.exports.getLatest = async event => {
 
   let d = new Date();
-  d.setDate(d.getDate - 7);
+  let y1 = d.getFullYear();
+  d.setDate(d.getDate() - 7);
   let isoDate = d.toISOString();
+  // let y2 = d.getFullYear();
 
-  var params = {
+  var params1 = {
+    ExpressionAttributeNames: { "#date": "date", "#year": "year" },
     ExpressionAttributeValues: {
-      ':date': isoDate
+      ':d': isoDate,
+      ':y1': y1
      },
-   KeyConditionExpression: 'date > :date',
+   KeyConditionExpression: '#year = :y1 AND #date > :d',
    TableName: process.env.HEADLINES_TABLE
   };
 
+  // if (y1 != y2) {
+  //   var params2 = {
+  //     ExpressionAttributeNames: { "#date": "date", "#year": "year" },
+  //     ExpressionAttributeValues: {
+  //       ':d': isoDate,
+  //       ':y2': y2
+  //       },
+  //     KeyConditionExpression: '#year = :y2 AND #date > :d',
+  //     TableName: process.env.HEADLINES_TABLE
+  //   };
+  // }
+
   try {
-    const result = await client.query(params).promise();
+    const result = await client.query(params1).promise();
+    // if (y1 != y2) {
+    //   let resultPromise1 = client.query(params1).promise();
+    //   let resultPromise2 = client.query(params2).promise();
+    // }
     return {
       statusCode: 200,
       headers: {
@@ -28,7 +48,7 @@ module.exports.getLatest = async event => {
       body: JSON.stringify(
         {
           message: "Success! Here are your headlines",
-          data: result.data.Items
+          data: result.Items
         }
       )
     };
@@ -43,7 +63,7 @@ module.exports.getLatest = async event => {
       },
       body: JSON.stringify(
         {
-          message: "Sorry! Something went wrong..."
+          message: "Sorry! Something went wrong..." + err
         }
       )
     };

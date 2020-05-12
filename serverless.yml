@@ -21,6 +21,7 @@ provider:
     - Effect: "Allow"
       Action:
         - dynamodb:PutItem
+        - dynamodb:Query
       Resource: 'arn:aws:dynamodb:eu-west-1:*:*'
 #    - Effect: "Allow"
 #      Action:
@@ -54,16 +55,16 @@ functions:
           description: 'invokes the scraper lambda every day at 10am UTC'
           rate: cron(0 10 * * ? *)
     environment:
-      HEADLINES_TABLE: topHeadlines
+      HEADLINES_TABLE: headlines
   getLatest:
     handler: api.getLatest
     events:
       - http:
-          path: api/getlatest
+          path: getlatest
           method: get
           cors: true
     environment:
-      HEADLINES_TABLE: topHeadlines
+      HEADLINES_TABLE: headlines
 
 
 resources:
@@ -78,6 +79,23 @@ resources:
         KeySchema:
           - AttributeName: date
             KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    headlinesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: headlines
+        AttributeDefinitions:
+          - AttributeName: year
+            AttributeType: N
+          - AttributeName: date
+            AttributeType: S
+        KeySchema:
+          - AttributeName: year
+            KeyType: HASH
+          - AttributeName: date
+            KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
