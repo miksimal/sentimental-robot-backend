@@ -26,7 +26,7 @@ module.exports.scraper = async event => {
       date: isoDate,
       topHeadlines: topHeadlines,
     },
-    TableName: 'topHeadlines'
+    TableName: process.env.HEADLINES_TABLE
   };
 
   return client.put(params).promise();
