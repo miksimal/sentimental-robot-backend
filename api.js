@@ -9,7 +9,7 @@ module.exports.getLatest = async event => {
   let y1 = d.getFullYear();
   d.setDate(d.getDate() - 7);
   let isoDate = d.toISOString();
-  // let y2 = d.getFullYear();
+  let y2 = d.getFullYear();
 
   var params1 = {
     ExpressionAttributeNames: { "#date": "date", "#year": "year" },
@@ -21,24 +21,30 @@ module.exports.getLatest = async event => {
    TableName: process.env.HEADLINES_TABLE
   };
 
-  // if (y1 != y2) {
-  //   var params2 = {
-  //     ExpressionAttributeNames: { "#date": "date", "#year": "year" },
-  //     ExpressionAttributeValues: {
-  //       ':d': isoDate,
-  //       ':y2': y2
-  //       },
-  //     KeyConditionExpression: '#year = :y2 AND #date > :d',
-  //     TableName: process.env.HEADLINES_TABLE
-  //   };
-  // }
+  if (y1 != y2) {
+    var params2 = {
+      ExpressionAttributeNames: { "#date": "date", "#year": "year" },
+      ExpressionAttributeValues: {
+        ':d': isoDate,
+        ':y2': y2
+        },
+      KeyConditionExpression: '#year = :y2 AND #date > :d',
+      TableName: process.env.HEADLINES_TABLE
+    };
+  }
 
   try {
-    const result = await client.query(params1).promise();
-    // if (y1 != y2) {
-    //   let resultPromise1 = client.query(params1).promise();
-    //   let resultPromise2 = client.query(params2).promise();
-    // }
+    let result;
+
+    if(y1 != y2) {
+        let resultPromise1 = client.query(params1).promise();
+        let resultPromise2 = client.query(params2).promise();
+        const [result1, result2] = await Promise.all([resultPromise1,resultPromise2]);
+        result = [...result1.Items, ...result2.Items];
+    } else { 
+      result = await client.query(params1).promise();
+    }
+
     return {
       statusCode: 200,
       headers: {
@@ -47,14 +53,12 @@ module.exports.getLatest = async event => {
       },
       body: JSON.stringify(
         {
-          message: "Success! Here are your headlines",
           data: result.Items
         }
       )
     };
   }
   catch(err) {
-    console.log("Error", err);
     return {
       statusCode: 400,
       headers: {
@@ -63,7 +67,7 @@ module.exports.getLatest = async event => {
       },
       body: JSON.stringify(
         {
-          message: "Sorry! Something went wrong..." + err
+          message: "Sorry! Something went wrong: " + err
         }
       )
     };
