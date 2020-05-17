@@ -22,7 +22,9 @@ provider:
       Action:
         - dynamodb:PutItem
         - dynamodb:Query
-      Resource: 'arn:aws:dynamodb:eu-west-1:*:*'
+        - comprehend:DetectSentiment
+        - lambda:InvokeFunction
+      Resource: '*'
 #    - Effect: "Allow"
 #      Action:
 #        - "s3:PutObject"
@@ -56,6 +58,15 @@ functions:
           rate: cron(0 10 * * ? *)
     environment:
       HEADLINES_TABLE: headlines
+  bbcScraper:
+    handler: handler.bbcScraper
+    events:
+      - schedule:
+          name: bbc-invoke-every-day-at-10am
+          description: 'invokes the scraper lambda every day at 10am UTC'
+          rate: cron(0 10 * * ? *)
+    environment:
+      BBC_HEADLINES_TABLE: bbcHeadlines
   getLatest:
     handler: api.getLatest
     events:
@@ -65,7 +76,9 @@ functions:
           cors: true
     environment:
       HEADLINES_TABLE: headlines
-
+  analyser:
+    handler: analysisHandler.analyser
+    runtime: python3.6
 
 resources:
   Resources:
@@ -86,6 +99,23 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: headlines
+        AttributeDefinitions:
+          - AttributeName: year
+            AttributeType: N
+          - AttributeName: date
+            AttributeType: S
+        KeySchema:
+          - AttributeName: year
+            KeyType: HASH
+          - AttributeName: date
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    bbcHeadlinesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: bbcHeadlines
         AttributeDefinitions:
           - AttributeName: year
             AttributeType: N
