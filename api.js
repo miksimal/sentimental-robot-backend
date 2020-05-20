@@ -18,7 +18,8 @@ module.exports.getLatest = async event => {
       ':y1': y1
      },
    KeyConditionExpression: '#year = :y1 AND #date > :d',
-   TableName: process.env.HEADLINES_TABLE
+   TableName: process.env.HEADLINES_TABLE,
+   ScanIndexForward: false
   };
 
   if (y1 != y2) {
@@ -29,7 +30,8 @@ module.exports.getLatest = async event => {
         ':y2': y2
         },
       KeyConditionExpression: '#year = :y2 AND #date > :d',
-      TableName: process.env.HEADLINES_TABLE
+      TableName: process.env.HEADLINES_TABLE,
+      ScanIndexForward: false
     };
   }
 
@@ -89,7 +91,8 @@ module.exports.getLatestBbc = async event => {
       ':y1': y1
      },
    KeyConditionExpression: '#year = :y1 AND #date > :d',
-   TableName: process.env.BBC_HEADLINES_TABLE
+   TableName: process.env.BBC_HEADLINES_TABLE,
+   ScanIndexForward: false
   };
 
   if (y1 != y2) {
@@ -100,7 +103,8 @@ module.exports.getLatestBbc = async event => {
         ':y2': y2
         },
       KeyConditionExpression: '#year = :y2 AND #date > :d',
-      TableName: process.env.BBC_HEADLINES_TABLE
+      TableName: process.env.BBC_HEADLINES_TABLE,
+      ScanIndexForward: false
     };
   }
 
