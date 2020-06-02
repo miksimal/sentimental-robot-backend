@@ -37,9 +37,6 @@ functions:
           cors: true
     environment:
       BBC_HEADLINES_TABLE: bbcHeadlines
-  analyser:
-    handler: analysisHandler.analyser
-    runtime: python3.6
 
 resources:
   Resources:
