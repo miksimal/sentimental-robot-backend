@@ -7,16 +7,22 @@ const client = new AWS.DynamoDB.DocumentClient({region: 'eu-west-1'});
 
 module.exports.bbcScraper = async event => {
   const comprehend = new AWS.Comprehend();
-  const URL = 'https://bbc.co.uk';
+  const URL = 'https://bbc.co.uk/news';
   const response = await got(URL);
   const dom = new JSDOM(response.body);
   const MAX_LENGTH = 10;
 
-  const headlineElements = dom.window.document.querySelectorAll("span.top-story__title");
+  const headlineElements = dom.window.document.querySelectorAll("h3.gs-c-promo-heading__title");
   const headlineElementsArr = [...headlineElements];
-  const length = headlineElements.length >= MAX_LENGTH ? MAX_LENGTH : headlineElements.length;
-  
-  const topHeadlines = headlineElementsArr.slice(0,length).map(e => e.textContent);
+  const adjustedArr = [];
+  headlineElementsArr.map(e => {
+    if (!adjustedArr.includes(e.textContent)) {
+      adjustedArr.push(e.textContent);
+    }
+  });
+  if (adjustedArr.length < 10) throw new Error('Found fewer than ' + MAX_LENGTH + ' headlines!');
+
+  const topHeadlines = adjustedArr.slice(0,MAX_LENGTH);
   const headlinesString = JSON.stringify(topHeadlines.join('. '));
 
   const comprehendResult = await comprehend.detectSentiment({Text: headlinesString, LanguageCode: "en"}).promise();
