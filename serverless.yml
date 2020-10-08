@@ -59,10 +59,12 @@ functions:
   transform:
     handler: transformer.transform
     events:
-      - stream: arn:aws:dynamodb:eu-west-1:866195672519:table/bbcHeadlines/stream/2020-09-23T21:43:28.408
-        maximumRetryAttempts: 1
-        maximumRecordAgeInSeconds: 60
-        startingPosition: LATEST
+      - stream:
+          arn: arn:aws:dynamodb:eu-west-1:866195672519:table/bbcHeadlines/stream/2020-09-23T21:43:28.408
+          maximumRetryAttempts: 1
+          maximumRecordAgeInSeconds: 60
+          startingPosition: LATEST
+          enabled: true
     environment:
       BBC_HEADLINES_TABLE: bbcHeadlines
 
