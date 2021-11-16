@@ -19,7 +19,7 @@
   "homepage": "https://github.com/miksimal/scrape-the-news#readme",
   "dependencies": {
     "algoliasearch": "^4.5.1",
-    "aws-sdk": "^2.745.0",
+    "aws-sdk": "^2.814.0",
     "got": "^11.1.0",
     "jsdom": "^16.2.2"
   }
