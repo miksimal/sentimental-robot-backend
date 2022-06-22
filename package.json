@@ -20,7 +20,7 @@
   "dependencies": {
     "algoliasearch": "^4.5.1",
     "aws-sdk": "^2.745.0",
-    "got": "^11.1.0",
+    "got": "^11.8.5",
     "jsdom": "^16.2.2"
   }
 }
